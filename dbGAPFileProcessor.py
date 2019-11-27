@@ -1,6 +1,7 @@
 import os
 import DatabaseOperations as wd
 import FileProcessorThread as frt
+from time import sleep
 
 class dbGAPFileProcessor:
     def __init__(self, root_directory_path):
@@ -12,6 +13,9 @@ class dbGAPFileProcessor:
         for t in self.threads:
             t.join()
         print("Exiting Main Thread")
+
+    def kill_finished_threads(self):
+        self.threads = [t for t in self.threads if not t.done]
 
     def processDirectories(self):
         directory_list = list()
@@ -26,8 +30,11 @@ class dbGAPFileProcessor:
             if os.path.exists(path_to_traverse):
                 for root, dirs, files in os.walk(path_to_traverse, topdown=True):
                     for name in files:
-                        if (name != '.DS_Store'):
+                        if (name != '.DS_Store' and name.startswith('._') == False):
                             self.study_id = name
+                            while(len(self.threads) >= 10):
+                                sleep(1)
+                                self.kill_finished_threads()
                             try:
                                 thread = frt.FileProcessorThread(path_to_traverse + "/" + name, self.writeToDatabase,
                                                                  self.study_id)

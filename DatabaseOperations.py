@@ -13,7 +13,8 @@ class DatabaseOperations:
         if(self.conn is None):
             try:
                 print('Connecting to the PostgreSQL database...')
-                self.conn = psycopg2.connect(host="localhost", database="dbgap", user="postgres", password="postgres")
+                self.conn = psycopg2.connect(host="localhost", database="gulsah", user="postgres", password="postgres")
+                print('Connection established')
             except (Exception, psycopg2.DatabaseError) as error:
                 print(error)
 
@@ -24,7 +25,7 @@ class DatabaseOperations:
                 cur.execute(query, parameters)
                 cur.close()
             except (Exception, psycopg2.DatabaseError) as error:
-                print('Exception occured during insert:' + str(error))
+                print('Exception occurred during insert:' + str(error))
 
     def commit(self):
         self.conn.commit()
